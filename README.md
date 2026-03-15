@@ -1,3 +1,6 @@
+---
+type: "note"
+---
 # Collaborator
 
 Collaborator is a place to build with agents.
@@ -214,33 +217,5 @@ Canvas state is saved 500ms after each change (debounced) and immediately when t
   }
 }
 ```
-
-### Keyboard shortcuts
-
-| Shortcut           | Action               |
-| ------------------ | -------------------- |
-| Cmd+\              | Toggle navigator     |
-| Cmd+,              | Settings             |
-| Cmd+Shift+O        | Add workspace        |
-| Cmd+K              | Search               |
-| Cmd+=              | Zoom in              |
-| Cmd+-              | Zoom out             |
-| Cmd+0              | Reset zoom           |
-| F2                 | Rename selected file |
-| Delete / Backspace | Delete selected file |
-| Escape             | Close viewer         |
-
-### Appearance
-
-The application supports light and dark modes.
-
-| Property   | Light              | Dark                     |
-| ---------- | ------------------ | ------------------------ |
-| Background | rgb(248, 248, 248) | rgb(18, 18, 18)          |
-| Canvas     | rgb(230, 230, 230) | rgb(24, 24, 24)          |
-| Text       | rgb(32, 32, 32)    | rgb(220, 220, 220)       |
-| Border     | rgb(206, 206, 206) | rgba(255, 255, 255, 0.2) |
-
-Tiles have rounded corners and a subtle drop shadow.
 
 ⠀
