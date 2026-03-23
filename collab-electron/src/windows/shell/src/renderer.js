@@ -58,13 +58,11 @@ const CELL = 20;
 const MAJOR = 80;
 const CROSS_R = 4;
 
-let canvasX = 0;
-let canvasY = 0;
+const viewportState = { panX: 0, panY: 0, zoom: 1 };
 let zoomSnapTimer = null;
 let zoomSnapRaf = null;
 let lastZoomFocalX = 0;
 let lastZoomFocalY = 0;
-let canvasScale = 1;
 let zoomIndicatorTimer = null;
 
 const canvasEl = document.getElementById("panel-viewer");
@@ -93,15 +91,15 @@ function drawGrid() {
 	const dark = isDark();
 	gridCtx.clearRect(0, 0, w, h);
 
-	const step = CELL * canvasScale;
-	const majorStep = MAJOR * canvasScale;
-	const offX = ((canvasX % majorStep) + majorStep) % majorStep;
-	const offY = ((canvasY % majorStep) + majorStep) % majorStep;
+	const step = CELL * viewportState.zoom;
+	const majorStep = MAJOR * viewportState.zoom;
+	const offX = ((viewportState.panX % majorStep) + majorStep) % majorStep;
+	const offY = ((viewportState.panY % majorStep) + majorStep) % majorStep;
 
 	// Dots at minor intersections
-	const dotOffX = ((canvasX % step) + step) % step;
-	const dotOffY = ((canvasY % step) + step) % step;
-	const dotSize = Math.max(1, 1.5 * canvasScale);
+	const dotOffX = ((viewportState.panX % step) + step) % step;
+	const dotOffY = ((viewportState.panY % step) + step) % step;
+	const dotSize = Math.max(1, 1.5 * viewportState.zoom);
 	gridCtx.fillStyle = dark
 		? "rgba(255,255,255,0.22)"
 		: "rgba(0,0,0,0.20)";
@@ -114,7 +112,7 @@ function drawGrid() {
 	}
 
 	// Brighter dots at major intersections
-	const majorDotSize = Math.max(1, 1.5 * canvasScale);
+	const majorDotSize = Math.max(1, 1.5 * viewportState.zoom);
 	gridCtx.fillStyle = dark
 		? "rgba(255,255,255,0.40)"
 		: "rgba(0,0,0,0.35)";
@@ -132,7 +130,7 @@ let onCanvasUpdate = null;
 const zoomIndicatorEl = document.getElementById("zoom-indicator");
 
 function showZoomIndicator() {
-	const pct = Math.round(canvasScale * 100);
+	const pct = Math.round(viewportState.zoom * 100);
 	zoomIndicatorEl.textContent = `${pct}%`;
 	zoomIndicatorEl.classList.add("visible");
 	clearTimeout(zoomIndicatorTimer);
@@ -152,8 +150,8 @@ let prevCanvasH = canvasEl.clientHeight;
 new ResizeObserver(() => {
 	const w = canvasEl.clientWidth;
 	const h = canvasEl.clientHeight;
-	canvasX += (w - prevCanvasW) / 2;
-	canvasY += (h - prevCanvasH) / 2;
+	viewportState.panX += (w - prevCanvasW) / 2;
+	viewportState.panY += (h - prevCanvasH) / 2;
 	prevCanvasW = w;
 	prevCanvasH = h;
 	resizeGridCanvas();
@@ -165,23 +163,23 @@ resizeGridCanvas();
 function snapBackZoom() {
 	const fx = lastZoomFocalX;
 	const fy = lastZoomFocalY;
-	const target = canvasScale > ZOOM_MAX ? ZOOM_MAX : ZOOM_MIN;
+	const target = viewportState.zoom > ZOOM_MAX ? ZOOM_MAX : ZOOM_MIN;
 
 	function animate() {
-		const prevScale = canvasScale;
-		canvasScale += (target - canvasScale) * 0.15;
+		const prevScale = viewportState.zoom;
+		viewportState.zoom += (target - viewportState.zoom) * 0.15;
 
-		if (Math.abs(canvasScale - target) < 0.001) {
-			canvasScale = target;
+		if (Math.abs(viewportState.zoom - target) < 0.001) {
+			viewportState.zoom = target;
 		}
 
-		const ratio = canvasScale / prevScale - 1;
-		canvasX -= (fx - canvasX) * ratio;
-		canvasY -= (fy - canvasY) * ratio;
+		const ratio = viewportState.zoom / prevScale - 1;
+		viewportState.panX -= (fx - viewportState.panX) * ratio;
+		viewportState.panY -= (fy - viewportState.panY) * ratio;
 		showZoomIndicator();
 		updateCanvas();
 
-		if (canvasScale === target) {
+		if (viewportState.zoom === target) {
 			zoomSnapRaf = null;
 			return;
 		}
@@ -198,30 +196,30 @@ function applyZoom(deltaY, focalX, focalY) {
 	}
 	clearTimeout(zoomSnapTimer);
 
-	const prevScale = canvasScale;
+	const prevScale = viewportState.zoom;
 	let factor = Math.exp((-deltaY * 0.6) / 100);
 
-	if (canvasScale >= ZOOM_MAX && factor > 1) {
-		const overshoot = canvasScale / ZOOM_MAX - 1;
+	if (viewportState.zoom >= ZOOM_MAX && factor > 1) {
+		const overshoot = viewportState.zoom / ZOOM_MAX - 1;
 		const damping = 1 / (1 + overshoot * ZOOM_RUBBER_BAND_K);
 		factor = 1 + (factor - 1) * damping;
-		canvasScale *= factor;
-	} else if (canvasScale <= ZOOM_MIN && factor < 1) {
-		const overshoot = ZOOM_MIN / canvasScale - 1;
+		viewportState.zoom *= factor;
+	} else if (viewportState.zoom <= ZOOM_MIN && factor < 1) {
+		const overshoot = ZOOM_MIN / viewportState.zoom - 1;
 		const damping = 1 / (1 + overshoot * ZOOM_RUBBER_BAND_K);
 		factor = 1 - (1 - factor) * damping;
-		canvasScale *= factor;
+		viewportState.zoom *= factor;
 	} else {
-		canvasScale *= factor;
+		viewportState.zoom *= factor;
 	}
 
-	const ratio = canvasScale / prevScale - 1;
-	canvasX -= (focalX - canvasX) * ratio;
-	canvasY -= (focalY - canvasY) * ratio;
+	const ratio = viewportState.zoom / prevScale - 1;
+	viewportState.panX -= (focalX - viewportState.panX) * ratio;
+	viewportState.panY -= (focalY - viewportState.panY) * ratio;
 	lastZoomFocalX = focalX;
 	lastZoomFocalY = focalY;
 
-	if (canvasScale > ZOOM_MAX || canvasScale < ZOOM_MIN) {
+	if (viewportState.zoom > ZOOM_MAX || viewportState.zoom < ZOOM_MIN) {
 		zoomSnapTimer = setTimeout(snapBackZoom, 150);
 	}
 
@@ -236,8 +234,8 @@ canvasEl.addEventListener("wheel", (e) => {
 		const rect = canvasEl.getBoundingClientRect();
 		applyZoom(e.deltaY, e.clientX - rect.left, e.clientY - rect.top);
 	} else {
-		canvasX -= e.deltaX * 1.2;
-		canvasY -= e.deltaY * 1.2;
+		viewportState.panX -= e.deltaX * 1.2;
+		viewportState.panY -= e.deltaY * 1.2;
 		updateCanvas();
 	}
 }, { passive: false });
@@ -488,9 +486,9 @@ async function init() {
 	/** @type {Map<string, {container: HTMLElement, contentArea: HTMLElement, titleText: HTMLElement, webview?: HTMLElement}>} */
 	const tileDOMs = new Map();
 	const viewport = {
-		get panX() { return canvasX; },
-		get panY() { return canvasY; },
-		get zoom() { return canvasScale; },
+		get panX() { return viewportState.panX; },
+		get panY() { return viewportState.panY; },
+		get zoom() { return viewportState.zoom; },
 	};
 
 	// State
@@ -524,9 +522,9 @@ async function init() {
 				zIndex: t.zIndex,
 			})),
 			viewport: {
-				panX: canvasX,
-				panY: canvasY,
-				zoom: canvasScale,
+				panX: viewportState.panX,
+				panY: viewportState.panY,
+				zoom: viewportState.zoom,
 			},
 		};
 	}
@@ -671,7 +669,7 @@ async function init() {
 		for (const tile of tiles) {
 			const dom = tileDOMs.get(tile.id);
 			if (!dom) continue;
-			positionTile(dom.container, tile, canvasX, canvasY, canvasScale);
+			positionTile(dom.container, tile, viewportState.panX, viewportState.panY, viewportState.zoom);
 		}
 	}
 
@@ -989,7 +987,7 @@ async function init() {
 
 		tileLayer.appendChild(dom.container);
 		tileDOMs.set(tile.id, dom);
-		positionTile(dom.container, tile, canvasX, canvasY, canvasScale);
+		positionTile(dom.container, tile, viewportState.panX, viewportState.panY, viewportState.zoom);
 
 		return tile;
 	}
@@ -1119,9 +1117,9 @@ async function init() {
 		for (const id of tileIds) {
 			closeCanvasTile(id);
 		}
-		canvasX = 0;
-		canvasY = 0;
-		canvasScale = 1;
+		viewportState.panX = 0;
+		viewportState.panY = 0;
+		viewportState.zoom = 1;
 		updateCanvas();
 		saveCanvasImmediate();
 	}
@@ -1142,10 +1140,10 @@ async function init() {
 	}
 
 	function isFullyOffScreen(tile, vw, vh) {
-		const left = tile.x * canvasScale + canvasX;
-		const top = tile.y * canvasScale + canvasY;
-		const right = left + tile.width * canvasScale;
-		const bottom = top + tile.height * canvasScale;
+		const left = tile.x * viewportState.zoom + viewportState.panX;
+		const top = tile.y * viewportState.zoom + viewportState.panY;
+		const right = left + tile.width * viewportState.zoom;
+		const bottom = top + tile.height * viewportState.zoom;
 		return right <= 0 || left >= vw || bottom <= 0 || top >= vh;
 	}
 
@@ -1201,10 +1199,10 @@ async function init() {
 
 		const vw = canvasEl.clientWidth;
 		const vh = canvasEl.clientHeight;
-		const targetX = vw / 2 - (tile.x + tile.width / 2) * canvasScale;
-		const targetY = vh / 2 - (tile.y + tile.height / 2) * canvasScale;
-		const startX = canvasX;
-		const startY = canvasY;
+		const targetX = vw / 2 - (tile.x + tile.width / 2) * viewportState.zoom;
+		const targetY = vh / 2 - (tile.y + tile.height / 2) * viewportState.zoom;
+		const startX = viewportState.panX;
+		const startY = viewportState.panY;
 		const startTime = performance.now();
 		const DURATION = 350;
 
@@ -1216,8 +1214,8 @@ async function init() {
 			const elapsed = now - startTime;
 			const t = Math.min(elapsed / DURATION, 1);
 			const e = easeOut(t);
-			canvasX = startX + (targetX - startX) * e;
-			canvasY = startY + (targetY - startY) * e;
+			viewportState.panX = startX + (targetX - startX) * e;
+			viewportState.panY = startY + (targetY - startY) * e;
 			updateCanvas();
 
 			if (t < 1) {
@@ -1290,8 +1288,8 @@ async function init() {
 
 			activeIds.add(tile.id);
 
-			const tcx = tile.x * canvasScale + canvasX + (tile.width * canvasScale) / 2;
-			const tcy = tile.y * canvasScale + canvasY + (tile.height * canvasScale) / 2;
+			const tcx = tile.x * viewportState.zoom + viewportState.panX + (tile.width * viewportState.zoom) / 2;
+			const tcy = tile.y * viewportState.zoom + viewportState.panY + (tile.height * viewportState.zoom) / 2;
 			const { x: dotX, y: dotY } = rayRectIntersect(vcx, vcy, tcx, tcy, vw, vh);
 
 			let dot = edgeDotMap.get(tile.id);
@@ -1364,8 +1362,8 @@ async function init() {
 		const rect = canvasEl.getBoundingClientRect();
 		const screenX = e.clientX - rect.left;
 		const screenY = e.clientY - rect.top;
-		const cx = (screenX - canvasX) / canvasScale;
-		const cy = (screenY - canvasY) / canvasScale;
+		const cx = (screenX - viewportState.panX) / viewportState.zoom;
+		const cy = (screenY - viewportState.panY) / viewportState.zoom;
 
 		const ws = getActiveWorkspace();
 		const cwd = ws ? ws.path : undefined;
@@ -1383,8 +1381,8 @@ async function init() {
 		const rect = canvasEl.getBoundingClientRect();
 		const screenX = e.clientX - rect.left;
 		const screenY = e.clientY - rect.top;
-		const cx = (screenX - canvasX) / canvasScale;
-		const cy = (screenY - canvasY) / canvasScale;
+		const cx = (screenX - viewportState.panX) / viewportState.zoom;
+		const cy = (screenY - viewportState.panY) / viewportState.zoom;
 
 		const selected = await window.shellApi.showContextMenu([
 			{ id: "new-terminal", label: "New terminal tile" },
@@ -1739,9 +1737,9 @@ async function init() {
 
 	const savedState = await window.shellApi.canvasLoadState();
 	if (savedState) {
-		canvasX = savedState.viewport.panX;
-		canvasY = savedState.viewport.panY;
-		canvasScale = savedState.viewport.zoom;
+		viewportState.panX = savedState.viewport.panX;
+		viewportState.panY = savedState.viewport.panY;
+		viewportState.zoom = savedState.viewport.zoom;
 		updateCanvas();
 
 		for (const savedTile of savedState.tiles) {
@@ -2001,8 +1999,8 @@ async function init() {
 					const cwd = args[0];
 					const size = defaultSize("term");
 					const rect = canvasEl.getBoundingClientRect();
-					const cx = (rect.width / 2 - canvasX) / canvasScale - size.width / 2;
-					const cy = (rect.height / 2 - canvasY) / canvasScale - size.height / 2;
+					const cx = (rect.width / 2 - viewportState.panX) / viewportState.zoom - size.width / 2;
+					const cy = (rect.height / 2 - viewportState.panY) / viewportState.zoom - size.height / 2;
 					const tile = createCanvasTile("term", cx, cy, { cwd });
 					spawnTerminalWebview(tile, true);
 					saveCanvasImmediate();
@@ -2032,8 +2030,8 @@ async function init() {
 					const folderPath = args[0];
 					const size = defaultSize("graph");
 					const rect = canvasEl.getBoundingClientRect();
-					const cx = (rect.width / 2 - canvasX) / canvasScale - size.width / 2;
-					const cy = (rect.height / 2 - canvasY) / canvasScale - size.height / 2;
+					const cx = (rect.width / 2 - viewportState.panX) / viewportState.zoom - size.width / 2;
+					const cy = (rect.height / 2 - viewportState.panY) / viewportState.zoom - size.height / 2;
 					createGraphTile(cx, cy, folderPath);
 				}
 			}
@@ -2176,16 +2174,16 @@ async function init() {
 
 		const startMX = e.clientX;
 		const startMY = e.clientY;
-		const startPanX = canvasX;
-		const startPanY = canvasY;
+		const startPanX = viewportState.panX;
+		const startPanY = viewportState.panY;
 
 		for (const h of getAllWebviews()) {
 			h.webview.style.pointerEvents = "none";
 		}
 
 		function onMove(ev) {
-			canvasX = startPanX + (ev.clientX - startMX);
-			canvasY = startPanY + (ev.clientY - startMY);
+			viewportState.panX = startPanX + (ev.clientX - startMX);
+			viewportState.panY = startPanY + (ev.clientY - startMY);
 			updateCanvas();
 		}
 
@@ -2320,8 +2318,8 @@ async function init() {
 		const rect = canvasEl.getBoundingClientRect();
 		const screenX = e.clientX - rect.left;
 		const screenY = e.clientY - rect.top;
-		const cx = (screenX - canvasX) / canvasScale;
-		const cy = (screenY - canvasY) / canvasScale;
+		const cx = (screenX - viewportState.panX) / viewportState.zoom;
+		const cy = (screenY - viewportState.panY) / viewportState.zoom;
 
 		let paths = [];
 
@@ -2506,18 +2504,18 @@ async function init() {
 				}
 				case "viewportGet": {
 					result = {
-						pan: { x: canvasX, y: canvasY },
-						zoom: canvasScale,
+						pan: { x: viewportState.panX, y: viewportState.panY },
+						zoom: viewportState.zoom,
 					};
 					break;
 				}
 				case "viewportSet": {
 					if (params.pan) {
-						canvasX = params.pan.x;
-						canvasY = params.pan.y;
+						viewportState.panX = params.pan.x;
+						viewportState.panY = params.pan.y;
 					}
 					if (params.zoom !== undefined) {
-						canvasScale = params.zoom;
+						viewportState.zoom = params.zoom;
 					}
 					updateCanvas();
 					saveCanvasDebounced();
