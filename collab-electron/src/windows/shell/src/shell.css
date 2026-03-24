@@ -197,10 +197,39 @@ body {
 	padding-top: var(--toolbar-height);
 }
 
+#settings-btn {
+	position: absolute;
+	top: 7px;
+	right: 10px;
+	z-index: 101;
+	-webkit-app-region: no-drag;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 24px;
+	height: 24px;
+	padding: 0;
+	border: none;
+	border-radius: 6px;
+	background: transparent;
+	color: var(--muted);
+	cursor: pointer;
+	transition: color 0.15s ease, background 0.15s ease;
+}
+
+#settings-btn:hover {
+	color: var(--fg);
+	background: color-mix(in srgb, var(--fg) 8%, transparent);
+}
+
+#settings-btn:active {
+	transform: scale(0.94);
+}
+
 #update-pill {
 	position: absolute;
 	top: 8px;
-	right: 10px;
+	right: 42px;
 	z-index: 101;
 	-webkit-app-region: no-drag;
 	padding: 2px 9px;

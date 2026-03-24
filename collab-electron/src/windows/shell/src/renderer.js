@@ -84,6 +84,7 @@ async function init() {
 	const settingsBackdrop =
 		document.getElementById("settings-backdrop");
 	const settingsModal = document.getElementById("settings-modal");
+	const settingsBtn = document.getElementById("settings-btn");
 	const updatePill = document.getElementById("update-pill");
 	const dragDropOverlay =
 		document.getElementById("drag-drop-overlay");
@@ -722,11 +723,6 @@ async function init() {
 			window.shellApi.toggleSettings();
 		} else if (action === "toggle-nav") {
 			panelManager.toggle();
-		} else if (action === "close-tab") {
-			const idx = workspaceManager.getActiveIndex();
-			if (idx >= 0) {
-				workspaceManager.removeWorkspace(idx);
-			}
 		} else if (action === "focus-search") {
 			if (workspaceManager.getActiveWorkspace()) {
 				if (!panelManager.isVisible()) {
@@ -738,14 +734,6 @@ async function init() {
 			wsAddOption.click();
 		} else if (action === "toggle-terminal-list") {
 			terminalPanel.toggle();
-		} else if (action.startsWith("switch-tab-")) {
-			const idx = parseInt(action.slice(11), 10) - 1;
-			if (
-				idx >= 0 &&
-				idx < workspaceManager.getWorkspaces().length
-			) {
-				workspaceManager.switchWorkspace(idx);
-			}
 		}
 	}
 
@@ -1081,6 +1069,10 @@ async function init() {
 	window.shellApi.onUpdateStatus((s) => {
 		updateState = s;
 		renderUpdatePill();
+	});
+
+	settingsBtn.addEventListener("click", () => {
+		window.shellApi.toggleSettings();
 	});
 
 	updatePill.addEventListener("click", () => {
