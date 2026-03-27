@@ -587,6 +587,23 @@ export function destroyAll(): void {
   }
 }
 
+/**
+ * Shut down the sidecar if it has no remaining sessions.
+ * Called during app quit so the detached process doesn't linger.
+ */
+export async function shutdownSidecarIfIdle(): Promise<void> {
+  if (!sidecarClient) return;
+  try {
+    const sessions = await sidecarClient.listSessions();
+    if (sessions.length === 0) {
+      await sidecarClient.shutdownSidecar();
+    }
+  } catch {
+    // Sidecar already gone or unreachable — nothing to do.
+  }
+  sidecarClient = null;
+}
+
 export interface DiscoveredSession {
   sessionId: string;
   meta: SessionMeta;

@@ -209,6 +209,12 @@ export class SidecarServer {
       ...params.env,
       COLLAB_PTY_SESSION_ID: sessionId,
     };
+    // ELECTRON_RUN_AS_NODE is set on the sidecar process so it runs
+    // as plain Node.js, but must not leak into user shells — it would
+    // cause any `electron` invocation to behave as Node instead of
+    // the Electron runtime (e.g. `bun run dev` failing with
+    // "module 'electron' does not provide an export named 'BrowserWindow'").
+    delete env.ELECTRON_RUN_AS_NODE;
     if (!env.LANG || !env.LANG.includes("UTF-8")) {
       env.LANG = "en_US.UTF-8";
     }

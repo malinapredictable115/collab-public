@@ -636,6 +636,7 @@ async function shutdownBackgroundServices(): Promise<void> {
   shuttingDown = true;
   pty.setShuttingDown(true);
   await pty.killAllAndWait();
+  await pty.shutdownSidecarIfIdle();
   watcher.stopWorker();
   if (!DISABLE_GIT_REPLAY) gitReplay.stopWorker();
   stopJsonRpcServer();
