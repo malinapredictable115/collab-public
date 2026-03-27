@@ -20,7 +20,10 @@ export class SidecarClient {
   private nextId = 1;
   private pending = new Map<
     number,
-    { resolve: (resp: JsonRpcResponse) => void }
+    {
+      resolve: (resp: JsonRpcResponse) => void;
+      reject: (err: Error) => void;
+    }
   >();
   private buf = "";
   private notificationHandler: NotificationHandler | null = null;
@@ -35,7 +38,14 @@ export class SidecarClient {
     return new Promise((resolve, reject) => {
       this.socket = net.createConnection(
         this.controlSocketPath,
-        () => resolve(),
+        () => {
+          // Replace the connect-time error handler with one that
+          // rejects all pending RPCs on unexpected socket errors.
+          this.socket!.removeListener("error", reject);
+          this.socket!.on("error", () => this.rejectAllPending());
+          this.socket!.on("close", () => this.rejectAllPending());
+          resolve();
+        },
       );
       this.socket.on("error", reject);
       this.socket.on("data", (chunk) => this.handleData(chunk));
@@ -47,6 +57,15 @@ export class SidecarClient {
       this.socket.destroy();
       this.socket = null;
     }
+    this.rejectAllPending();
+  }
+
+  private rejectAllPending(): void {
+    const err = new Error("Sidecar connection lost");
+    for (const [id, { reject }] of this.pending) {
+      reject(err);
+    }
+    this.pending.clear();
   }
 
   private handleData(chunk: Buffer): void {
@@ -55,17 +74,25 @@ export class SidecarClient {
     while ((nl = this.buf.indexOf("\n")) !== -1) {
       const line = this.buf.slice(0, nl);
       this.buf = this.buf.slice(nl + 1);
-      const msg = JSON.parse(line);
-
-      if (msg.id === undefined) {
-        this.notificationHandler?.(msg.method, msg.params ?? {});
+      let msg: Record<string, unknown>;
+      try {
+        msg = JSON.parse(line);
+      } catch {
         continue;
       }
 
-      const pending = this.pending.get(msg.id);
+      if (msg.id === undefined) {
+        this.notificationHandler?.(
+          msg.method as string,
+          (msg.params ?? {}) as Record<string, unknown>,
+        );
+        continue;
+      }
+
+      const pending = this.pending.get(msg.id as number);
       if (pending) {
-        this.pending.delete(msg.id);
-        pending.resolve(msg);
+        this.pending.delete(msg.id as number);
+        pending.resolve(msg as unknown as JsonRpcResponse);
       }
     }
   }
@@ -77,13 +104,23 @@ export class SidecarClient {
     if (!this.socket) throw new Error("Not connected");
     const id = this.nextId++;
     return new Promise((resolve, reject) => {
+      const timer = setTimeout(() => {
+        this.pending.delete(id);
+        reject(new Error(`RPC timeout: ${method}`));
+      }, 10_000);
+
       this.pending.set(id, {
         resolve: (resp) => {
+          clearTimeout(timer);
           if (resp.error) {
             reject(new Error(resp.error.message));
           } else {
             resolve(resp.result);
           }
+        },
+        reject: (err) => {
+          clearTimeout(timer);
+          reject(err);
         },
       });
       this.socket!.write(makeRequest(id, method, params));
